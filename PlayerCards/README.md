@@ -1,7 +1,7 @@
 # Player Cards
 
 A mod for **Backyard Baseball 2026** that brings back classic-BYB personality by
-replacing the flat "VS" matchup banner with the game's own **collectible trading cards**.
+replacing the "VS" matchup banner with the game's own **collectible trading cards**.
 
 - **Batter's card** sits bottom-left with their "X For Y Today" line beneath it.
 - **Pitcher's card** sits top-right with their pitch count (P / K / BB) beneath it.
