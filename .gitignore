@@ -1,0 +1,17 @@
+# Build output
+bin/
+obj/
+*.user
+
+# IDE
+.vs/
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Decompiled game sources / local scratch (never commit game IP)
+decomp/
+*.decomp
