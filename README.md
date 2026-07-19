@@ -9,6 +9,8 @@ UI based mods using the awesome collectible Cards in-game just for fun!
 
 Released for the community under **@flamingaxe12**.
 
+![Player Cards — the collectible-card HUD with a live season batting average, in a League game](PlayerCards/media/UI_Cards_LeagueAvg.png)
+
 ---
 
 ## The mods

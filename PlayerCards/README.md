@@ -14,6 +14,14 @@ replacing the flat "VS" matchup banner with the game's own **collectible trading
 *This is an overlay drawn on top of the HUD — it doesn't change any of the game's files
 or assets. Delete it and the game is exactly as it was.*
 
+## Screenshots
+
+![Player Cards in a League game — batter and pitcher cards with the live season AVG line](media/UI_Cards_LeagueAvg.png)
+
+*Roster kids show their own collectible cards. Custom and League-created kids (who have no card of their own) fall back to the classic LINE DRIVE / HEAT skill cards, with their name across the bottom:*
+
+![Custom-kid fallback cards — LINE DRIVE for the batter, HEAT for the pitcher](media/UI_Cards_Players.png)
+
 ---
 
 ## Requirements

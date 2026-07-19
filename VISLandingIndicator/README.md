@@ -12,6 +12,12 @@ the game's own night reticle color, so you can always see where a fly ball is co
 *This is a runtime tint only — it changes no game files and no game assets. Delete it
 and the game is exactly as it was.*
 
+## Screenshots
+
+![The landing indicator staying readable on a dark asphalt field (Tin Can Alley)](media/BallLocation_Day.png)
+
+![The landing indicator lightened for visibility on a night map](media/BallLocation_Night.png)
+
 ---
 
 ## Requirements

@@ -10,6 +10,14 @@ has the ball back and is ready for the next pitch — just like the old-school g
 *Nothing changes about the game's own files — this is a drop-in plugin that adds an
 overlay on top. Delete it and the game is exactly as it was.*
 
+## Screenshots
+
+![The red X marks where the pitch crossed the plate](media/PitchLocator_NoAssist.png)
+
+*With the aim assist on, the X snaps onto the aim circle that players read as the pitch's sweet spot — since a curveball physically curves away from it:*
+
+![The X anchored to the aim-assist circle](media/PitchLocator_AimAssist.png)
+
 ---
 
 ## Requirements
