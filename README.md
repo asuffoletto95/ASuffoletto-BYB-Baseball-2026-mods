@@ -1,10 +1,11 @@
 # Backyard Baseball 2026 — Mods
 
 A set of three fan-made mods for **Backyard Baseball 2026** (Unity, Mono backend),
-built as **BepInEx 5 / Harmony** plugins. Each one solves a real player pain point while
+built as **BepInEx 5 / Harmony** plugins. Each one solves a real player pain points while
 staying deliberately safe: **no game files are modified, save data is never written, and
 none of the game's own assets are redistributed.** Everything layers on at runtime, so a
-mod is installed by dropping in one DLL and uninstalled by deleting it.
+mod is installed by dropping in one DLL and uninstalled by deleting it. I also added a
+UI based mods using the awesome collectible Cards in-game just for fun!
 
 Released for the community under **@flamingaxe12**.
 
