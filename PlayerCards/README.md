@@ -26,7 +26,7 @@ or assets. Delete it and the game is exactly as it was.*
 
 ## Requirements
 
-- **Backyard Baseball 2026** (Steam). Built and tested against game build **1.0.8.3**.
+- **Backyard Baseball 2026** (Steam). Built and tested against game build **1.0.9.2**.
 - **BepInEx 5.4.x (Mono, x64)** — the mod loader this plugin runs on.
   Get it from the official BepInEx releases: https://github.com/BepInEx/BepInEx/releases
   (download the **BepInEx_win_x64_5.4.x** build — *not* the IL2CPP one).
@@ -72,6 +72,15 @@ matchup banner comes right back.
 - Works alongside other BepInEx plugins.
 - If a game update changes the HUD internals and the cards stop appearing, the update
   likely moved something — check for a new version of the mod.
+
+## Changelog
+
+**1.1.0** — Compatibility with game build **1.0.9.2**. That update reworked the batting
+HUD internally (batter/pitcher slots became home/away). The mod now reads the batter and
+pitcher directly from the game state instead of the HUD layout, so the cards, stats, and
+names stay correct — and it's more resilient to future HUD changes.
+
+**1.0.0** — Initial release (game build 1.0.8.3).
 
 ## Disclaimer
 

@@ -38,22 +38,20 @@ namespace BackyardCardHud
 
         internal static GameHUDUI Hud; // set by the GameHUDUI hooks
 
-        private static readonly AccessTools.FieldRef<GameHUDUI, Image> BatterThumb =
-            AccessTools.FieldRefAccess<GameHUDUI, Image>("batterThumbnail");
-        private static readonly AccessTools.FieldRef<GameHUDUI, Image> PitcherThumb =
-            AccessTools.FieldRefAccess<GameHUDUI, Image>("pitcherThumbnail");
-        private static readonly AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> BatterStats =
-            AccessTools.FieldRefAccess<GameHUDUI, TextMeshProUGUI>("batterStats");
-        private static readonly AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> ScoreCount =
-            AccessTools.FieldRefAccess<GameHUDUI, TextMeshProUGUI>("scoreCount");
+        // NOTE (game v1.0.9.2): the HUD renamed batter/pitcher slots to home/away. We only use
+        // these two thumbnails to hide BOTH original banner slots + grab the font/pill sprite;
+        // the batter/pitcher STATS and NAMES are computed from GetBatter()/GetPitcher() below,
+        // so we no longer depend on which slot is which (immune to the home/away swap).
+        private static readonly AccessTools.FieldRef<GameHUDUI, Image> HomeThumb =
+            AccessTools.FieldRefAccess<GameHUDUI, Image>("homeThumbnail");
+        private static readonly AccessTools.FieldRef<GameHUDUI, Image> AwayThumb =
+            AccessTools.FieldRefAccess<GameHUDUI, Image>("awayThumbnail");
+        private static readonly AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> HomeStats =
+            AccessTools.FieldRefAccess<GameHUDUI, TextMeshProUGUI>("homeStats");
         private static readonly AccessTools.FieldRef<GameHUDUI, GameObject> ChangePitchPrompt =
             AccessTools.FieldRefAccess<GameHUDUI, GameObject>("changePitchPrompt");
         private static readonly AccessTools.FieldRef<GameHUDUI, GameObject> ChangeBatPrompt =
             AccessTools.FieldRefAccess<GameHUDUI, GameObject>("changeBatPrompt");
-        private static readonly AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> BatterName =
-            AccessTools.FieldRefAccess<GameHUDUI, TextMeshProUGUI>("batterName");
-        private static readonly AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> PitcherName =
-            AccessTools.FieldRefAccess<GameHUDUI, TextMeshProUGUI>("pitcherName");
 
         private TMP_FontAsset _gameFont;
         private Sprite _labelSprite;    // dark prompt pill (from changePitch/BatPrompt)
@@ -114,13 +112,13 @@ namespace BackyardCardHud
                 RefreshCard(_batterCard, batter, ref _lastBatterId, isBatter: true);
                 RefreshCard(_pitcherCard, pitcher, ref _lastPitcherId, isBatter: false);
 
-                _batterTally.text = ReadGameText(BatterStats);
-                _pitcherStatsText.text = ReadGameText(ScoreCount);
+                _batterTally.text = BatterTallyText(batter);
+                _pitcherStatsText.text = PitcherStatsText(pitcher);
                 UpdateAvg(batter);
 
                 // Custom kids use placeholder cards → overlay their name on the card bottom.
-                UpdateNameStrip(_batterNameStrip, _batterNameText, _batterIsCustom, BatterName);
-                UpdateNameStrip(_pitcherNameStrip, _pitcherNameText, _pitcherIsCustom, PitcherName);
+                UpdateNameStrip(_batterNameStrip, _batterNameText, _batterIsCustom, ShortName(batter));
+                UpdateNameStrip(_pitcherNameStrip, _pitcherNameText, _pitcherIsCustom, ShortName(pitcher));
 
                 // Reveal in sync with the game HUD: it stays hidden until the batter finishes
                 // walking up to the plate, so wait for the same signal (avoids popping in early).
@@ -137,7 +135,7 @@ namespace BackyardCardHud
 
             if (_gameFont == null)
             {
-                try { var bs = BatterStats(Hud); if (bs != null && bs.font != null) _gameFont = bs.font; }
+                try { var bs = HomeStats(Hud); if (bs != null && bs.font != null) _gameFont = bs.font; }
                 catch { }
             }
 
@@ -155,8 +153,8 @@ namespace BackyardCardHud
             {
                 try
                 {
-                    var bt = BatterThumb(Hud);
-                    var group = bt != null ? bt.transform.parent : null; // BatterStatCast
+                    var bt = HomeThumb(Hud);
+                    var group = bt != null ? bt.transform.parent : null; // home StatCast group
                     var img = group != null ? FindImageByName(group, "Collor_Fill") : null;
                     if (img != null && img.sprite != null)
                     {
@@ -280,8 +278,7 @@ namespace BackyardCardHud
             return t;
         }
 
-        private void UpdateNameStrip(GameObject strip, TextMeshProUGUI text, bool isCustom,
-                                     AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> nameField)
+        private void UpdateNameStrip(GameObject strip, TextMeshProUGUI text, bool isCustom, string name)
         {
             if (strip == null) return;
             if (!isCustom)
@@ -289,7 +286,7 @@ namespace BackyardCardHud
                 if (strip.activeSelf) strip.SetActive(false);
                 return;
             }
-            text.text = ReadGameText(nameField);
+            text.text = name;
             if (!strip.activeSelf) strip.SetActive(true);
         }
 
@@ -370,9 +367,35 @@ namespace BackyardCardHud
             return true; // can't tell → don't block
         }
 
-        private static string ReadGameText(AccessTools.FieldRef<GameHUDUI, TextMeshProUGUI> field)
+        // Stat text computed straight from GetBatter()/GetPitcher() rather than mirroring the
+        // game's home/away HUD slots (which swap sides). Format matches the game's own strings.
+        // Connective words are hardcoded English (the game localizes them via "For".Localize()).
+        private static string BatterTallyText(Character batter)
         {
-            try { var t = field(Hud); return t != null ? t.text : ""; }
+            try
+            {
+                var m = BaseballStatisticsManager.MatchStatistics?.GetCharacterStatisticsByName(batter.Id)?.Metrics;
+                if (m == null) return "";
+                return $"{m[MetricsEnum.Hits]} For {m[MetricsEnum.AtBats]} Today";
+            }
+            catch { return ""; }
+        }
+
+        private static string PitcherStatsText(Character pitcher)
+        {
+            try
+            {
+                var m = BaseballStatisticsManager.MatchStatistics?.GetCharacterStatisticsByName(pitcher.Id)?.Metrics;
+                if (m == null) return "";
+                return $"{m[MetricsEnum.PitchesThrown]} P {m[MetricsEnum.StrikeOutsCaused]} K {m[MetricsEnum.WalksAllowed]} BB";
+            }
+            catch { return ""; }
+        }
+
+        // The game's short "First L." name (also handles custom kids). Used for the name strip.
+        private static string ShortName(Character c)
+        {
+            try { return c != null ? c.Entry.LocalizedShortName() : ""; }
             catch { return ""; }
         }
 
@@ -404,10 +427,10 @@ namespace BackyardCardHud
         {
             try
             {
-                var bt = BatterThumb(Hud);
-                var pt = PitcherThumb(Hud);
-                if (bt != null) ZeroScale(bt.transform.parent);          // BatterStatCast
-                if (pt != null) ZeroScale(pt.transform.parent);          // PitcherStatCast
+                var bt = HomeThumb(Hud);
+                var pt = AwayThumb(Hud);
+                if (bt != null) ZeroScale(bt.transform.parent);          // home StatCast group
+                if (pt != null) ZeroScale(pt.transform.parent);          // away StatCast group
                 if (bt != null)
                 {
                     var widget = bt.transform.parent.parent;             // MatchUpWidget

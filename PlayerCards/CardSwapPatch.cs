@@ -2,17 +2,11 @@ using HarmonyLib;
 
 namespace BackyardCardHud
 {
-    // Lightweight hooks: just capture the live GameHUDUI instance for the overlay.
-    // (Card art + stats are now drawn on our own overlay in CardOverlay.)
-
-    [HarmonyPatch(typeof(GameHUDUI), "SetBatterNameAndPortrait")]
-    internal static class BatterHudHook
-    {
-        private static void Postfix(GameHUDUI __instance) => CardOverlay.Hud = __instance;
-    }
-
-    [HarmonyPatch(typeof(GameHUDUI), "SetPitcherNameAndPortrait")]
-    internal static class PitcherHudHook
+    // Capture the live GameHUDUI instance for the overlay. As of game v1.0.9.2 the HUD
+    // refactored batter/pitcher into home/away and replaced Set{Batter,Pitcher}NameAndPortrait
+    // with a single RefreshTeamNamesAndPortraits — hook that instead.
+    [HarmonyPatch(typeof(GameHUDUI), "RefreshTeamNamesAndPortraits")]
+    internal static class HudCaptureHook
     {
         private static void Postfix(GameHUDUI __instance) => CardOverlay.Hud = __instance;
     }
